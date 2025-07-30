@@ -102,8 +102,11 @@ action_menu() {
     echo ""
     echo "O que você deseja fazer?"
     echo "1. cat"
-    echo "2. vim"
-    echo "3. nano"
+    echo "2. sudo cat"
+    echo "3. vim"
+    echo "4. sudo vim"
+    echo "5. nano"
+    echo "6. sudo nano"
     echo -e "${RED}0. Voltar${NC}"
     echo ""
     echo -n "Digite sua escolha: "
@@ -111,8 +114,11 @@ action_menu() {
 
     case $action in
         1) clear; cat "$file_path"; echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"; read ;;
-        2) vim "$file_path" ;;
-        3) nano "$file_path" ;;
+        2) clear; sudo cat "$file_path"; echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"; read ;;
+        3) vim "$file_path" ;;
+        4) sudo vim "$file_path" ;;
+        5) nano "$file_path" ;;
+        6) sudo nano "$file_path" ;;
         0) return ;;
         *) echo -e "${RED}Opção inválida!${NC}"; sleep 2 ;;
     esac
