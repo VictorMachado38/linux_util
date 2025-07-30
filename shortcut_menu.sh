@@ -2,10 +2,11 @@
 
 # Script de Menu de Atalhos Interativo
 # Autor: Victor
-# Versão: 1.0
+# Versão: 1.1
 
 # Arquivo para armazenar os atalhos
-# Formato: "Descrição|/caminho/para/o/arquivo"
+# Formato: "Descrição|/caminho/para/o/arquivo|tipo"
+# Tipos: file (para arquivos), command (para comandos)
 SHORTCUTS_FILE="$HOME/.shortcuts.conf"
 
 # Cores
@@ -19,9 +20,6 @@ NC='\033[0m' # No Color
 
 # Garante que o arquivo de configuração exista
 touch "$SHORTCUTS_FILE"
-if ! grep -q "Cloudflared Config" "$SHORTCUTS_FILE"; then
-    echo "Cloudflared Config|/etc/cloudflared/config.yml" >> "$SHORTCUTS_FILE"
-fi
 
 
 # Função para exibir o cabeçalho
@@ -93,35 +91,71 @@ select_shortcut() {
 action_menu() {
     local shortcut_info=$1
     local description=$(echo "$shortcut_info" | cut -d'|' -f1)
-    local file_path=$(echo "$shortcut_info" | cut -d'|' -f2)
+    local path_or_command=$(echo "$shortcut_info" | cut -d'|' -f2)
+    local type=$(echo "$shortcut_info" | cut -d'|' -f3)
 
     clear
     show_header
     echo -e "${CYAN}Atalho:${NC} ${YELLOW}$description${NC}"
-    echo -e "${CYAN}Arquivo:${NC} ${PURPLE}$file_path${NC}"
-    echo ""
-    echo "O que você deseja fazer?"
-    echo "1. cat"
-    echo "2. sudo cat"
-    echo "3. vim"
-    echo "4. sudo vim"
-    echo "5. nano"
-    echo "6. sudo nano"
-    echo -e "${RED}0. Voltar${NC}"
-    echo ""
-    echo -n "Digite sua escolha: "
-    read -r action
+    
+    if [[ "$type" == "command" ]]; then
+        echo -e "${CYAN}Comando:${NC} ${PURPLE}$path_or_command${NC}"
+        echo ""
+        echo "O que você deseja fazer?"
+        echo "1. Executar comando"
+        echo "2. Executar comando com sudo"
+        echo -e "${RED}0. Voltar${NC}"
+        echo ""
+        echo -n "Digite sua escolha: "
+        read -r action
 
-    case $action in
-        1) clear; cat "$file_path"; echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"; read ;;
-        2) clear; sudo cat "$file_path"; echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"; read ;;
-        3) vim "$file_path" ;;
-        4) sudo vim "$file_path" ;;
-        5) nano "$file_path" ;;
-        6) sudo nano "$file_path" ;;
-        0) return ;;
-        *) echo -e "${RED}Opção inválida!${NC}"; sleep 2 ;;
-    esac
+        case $action in
+            1) 
+                clear
+                echo -e "${CYAN}Executando:${NC} ${YELLOW}$path_or_command${NC}"
+                echo ""
+                eval "$path_or_command"
+                echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"
+                read
+                ;;
+            2) 
+                clear
+                echo -e "${CYAN}Executando com sudo:${NC} ${YELLOW}$path_or_command${NC}"
+                echo ""
+                sudo eval "$path_or_command"
+                echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"
+                read
+                ;;
+            0) return ;;
+            *) echo -e "${RED}Opção inválida!${NC}"; sleep 2 ;;
+        esac
+    else
+        # Comportamento original para arquivos
+        echo -e "${CYAN}Arquivo:${NC} ${PURPLE}$path_or_command${NC}"
+        echo ""
+        echo "O que você deseja fazer?"
+        echo "1. cat"
+        echo "2. sudo cat"
+        echo "3. vim"
+        echo "4. sudo vim"
+        echo "5. nano"
+        echo "6. sudo nano"
+        echo -e "${RED}0. Voltar${NC}"
+        echo ""
+        echo -n "Digite sua escolha: "
+        read -r action
+
+        case $action in
+            1) clear; cat "$path_or_command"; echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"; read ;;
+            2) clear; sudo cat "$path_or_command"; echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"; read ;;
+            3) vim "$path_or_command" ;;
+            4) sudo vim "$path_or_command" ;;
+            5) nano "$path_or_command" ;;
+            6) sudo nano "$path_or_command" ;;
+            0) return ;;
+            *) echo -e "${RED}Opção inválida!${NC}"; sleep 2 ;;
+        esac
+    fi
 }
 
 # Função para adicionar um novo atalho
@@ -129,16 +163,35 @@ add_shortcut() {
     show_header
     echo -e "${CYAN}Adicionar Novo Atalho${NC}"
     echo ""
+    echo "Tipo de atalho:"
+    echo "1. Arquivo (para visualizar/editar)"
+    echo "2. Comando (para executar)"
+    echo ""
+    echo -n "Escolha o tipo (1 ou 2): "
+    read -r type_choice
+    
+    case $type_choice in
+        1) type="file" ;;
+        2) type="command" ;;
+        *) echo -e "${RED}Opção inválida!${NC}"; sleep 2; return ;;
+    esac
+    
     echo -n "Descrição do atalho: "
     read -r description
-    echo -n "Caminho completo do arquivo: "
-    read -r file_path
+    
+    if [[ "$type" == "command" ]]; then
+        echo -n "Comando a executar: "
+        read -r path_or_command
+    else
+        echo -n "Caminho completo do arquivo: "
+        read -r path_or_command
+    fi
 
-    if [[ -n "$description" && -n "$file_path" ]]; then
-        echo "$description|$file_path" >> "$SHORTCUTS_FILE"
+    if [[ -n "$description" && -n "$path_or_command" ]]; then
+        echo "$description|$path_or_command|$type" >> "$SHORTCUTS_FILE"
         echo -e "${GREEN}Atalho adicionado com sucesso!${NC}"
     else
-        echo -e "${RED}Descrição e caminho não podem ser vazios.${NC}"
+        echo -e "${RED}Descrição e caminho/comando não podem ser vazios.${NC}"
     fi
     sleep 2
 }
@@ -213,7 +266,12 @@ main_menu() {
             local index=1
             for item in "${shortcuts[@]}"; do
                 description=$(echo "$item" | cut -d'|' -f1)
-                echo -e "${YELLOW}$index.${NC} $description"
+                type=$(echo "$item" | cut -d'|' -f3)
+                if [[ "$type" == "command" ]]; then
+                    echo -e "${YELLOW}$index.${NC} ${GREEN}[CMD]${NC} $description"
+                else
+                    echo -e "${YELLOW}$index.${NC} ${BLUE}[FILE]${NC} $description"
+                fi
                 ((index++))
             done
             echo ""
