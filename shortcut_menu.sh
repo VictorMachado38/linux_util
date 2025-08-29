@@ -101,34 +101,11 @@ action_menu() {
     if [[ "$type" == "command" ]]; then
         echo -e "${CYAN}Comando:${NC} ${PURPLE}$path_or_command${NC}"
         echo ""
-        echo "O que você deseja fazer?"
-        echo "1. Executar comando"
-        echo "2. Executar comando com sudo"
-        echo -e "${RED}0. Voltar${NC}"
+        echo "Executando comando..."
         echo ""
-        echo -n "Digite sua escolha: "
-        read -r action
-
-        case $action in
-            1) 
-                clear
-                echo -e "${CYAN}Executando:${NC} ${YELLOW}$path_or_command${NC}"
-                echo ""
-                eval "$path_or_command"
-                echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"
-                read
-                ;;
-            2) 
-                clear
-                echo -e "${CYAN}Executando com sudo:${NC} ${YELLOW}$path_or_command${NC}"
-                echo ""
-                sudo eval "$path_or_command"
-                echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"
-                read
-                ;;
-            0) return ;;
-            *) echo -e "${RED}Opção inválida!${NC}"; sleep 2 ;;
-        esac
+        eval "$path_or_command"
+        echo -e "\n${GREEN}Pressione Enter para continuar...${NC}"
+        read
     else
         # Comportamento original para arquivos
         echo -e "${CYAN}Arquivo:${NC} ${PURPLE}$path_or_command${NC}"
