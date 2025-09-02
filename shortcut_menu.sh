@@ -25,9 +25,9 @@ touch "$SHORTCUTS_FILE"
 # Função para exibir o cabeçalho
 show_header() {
     clear
-    echo -e "${BLUE}╔═══════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║            MENU DE ATALHOS            ║${NC}"
-    echo -e "${BLUE}╚═══════════════════════════════════════╝${NC}"
+    echo -e "${BLUE}╔══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║                    🚀 MENU DE ATALHOS 🚀                    ║${NC}"
+    echo -e "${BLUE}╚══════════════════════════════════════════════════════════════╝${NC}"
     echo ""
 }
 
@@ -138,11 +138,11 @@ action_menu() {
 # Função para adicionar um novo atalho
 add_shortcut() {
     show_header
-    echo -e "${CYAN}Adicionar Novo Atalho${NC}"
+    echo -e "${CYAN}✨ Adicionar Novo Atalho ✨${NC}"
     echo ""
-    echo "Tipo de atalho:"
-    echo "1. Arquivo (para visualizar/editar)"
-    echo "2. Comando (para executar)"
+    echo -e "${YELLOW}Tipo de atalho:${NC}"
+    echo -e "${GREEN}1.${NC} 📁 Arquivo (para visualizar/editar)"
+    echo -e "${GREEN}2.${NC} ⚡ Comando (para executar)"
     echo ""
     echo -n "Escolha o tipo (1 ou 2): "
     read -r type_choice
@@ -150,25 +150,25 @@ add_shortcut() {
     case $type_choice in
         1) type="file" ;;
         2) type="command" ;;
-        *) echo -e "${RED}Opção inválida!${NC}"; sleep 2; return ;;
+        *) echo -e "${RED}❌ Opção inválida!${NC}"; sleep 2; return ;;
     esac
     
-    echo -n "Descrição do atalho: "
+    echo -n -e "${YELLOW}📝 Descrição do atalho: ${NC}"
     read -r description
     
     if [[ "$type" == "command" ]]; then
-        echo -n "Comando a executar: "
+        echo -n -e "${YELLOW}⚡ Comando a executar: ${NC}"
         read -r path_or_command
     else
-        echo -n "Caminho completo do arquivo: "
+        echo -n -e "${YELLOW}📁 Caminho completo do arquivo: ${NC}"
         read -r path_or_command
     fi
 
     if [[ -n "$description" && -n "$path_or_command" ]]; then
         echo "$description|$path_or_command|$type" >> "$SHORTCUTS_FILE"
-        echo -e "${GREEN}Atalho adicionado com sucesso!${NC}"
+        echo -e "${GREEN}✅ Atalho adicionado com sucesso!${NC}"
     else
-        echo -e "${RED}Descrição e caminho/comando não podem ser vazios.${NC}"
+        echo -e "${RED}❌ Descrição e caminho/comando não podem ser vazios.${NC}"
     fi
     sleep 2
 }
@@ -176,7 +176,7 @@ add_shortcut() {
 # Função para remover um atalho
 remove_shortcut() {
     show_header
-    echo -e "${CYAN}Remover Atalho${NC}"
+    echo -e "${CYAN}🗑️  Remover Atalho 🗑️${NC}"
     echo ""
     
     # Cria array de atalhos
@@ -195,19 +195,28 @@ remove_shortcut() {
     done
     
     echo ""
-    echo -e "${RED}0.${NC} Cancelar"
+    echo -e "${RED}0.${NC} ❌ Cancelar"
     echo ""
     echo -n "Qual atalho deseja remover? "
     read -r choice
 
     if [[ "$choice" -gt 0 && "$choice" -le ${#shortcuts[@]} ]]; then
         local line_to_remove="${shortcuts[$((choice-1))]}"
-        sed -i.bak "s|^$line_to_remove$||g" "$SHORTCUTS_FILE"
-        sed -i.bak '/^$/d' "$SHORTCUTS_FILE"
-        rm "${SHORTCUTS_FILE}.bak"
-        echo -e "${GREEN}Atalho removido com sucesso!${NC}"
+        
+        # Cria um arquivo temporário sem a linha a ser removida
+        local temp_file=$(mktemp)
+        while IFS= read -r line; do
+            if [[ "$line" != "$line_to_remove" ]]; then
+                echo "$line" >> "$temp_file"
+            fi
+        done < "$SHORTCUTS_FILE"
+        
+        # Substitui o arquivo original
+        mv "$temp_file" "$SHORTCUTS_FILE"
+        
+        echo -e "${GREEN}✅ Atalho removido com sucesso!${NC}"
     elif [[ "$choice" -ne 0 ]]; then
-        echo -e "${RED}Seleção inválida.${NC}"
+        echo -e "${RED}❌ Seleção inválida.${NC}"
     fi
     sleep 2
 }
@@ -215,9 +224,9 @@ remove_shortcut() {
 # Função de busca
 search_shortcut() {
     show_header
-    echo -e "${CYAN}Buscar Atalho${NC}"
+    echo -e "${CYAN}🔍 Buscar Atalho 🔍${NC}"
     echo ""
-    echo -n "Digite o termo para buscar na descrição: "
+    echo -n -e "${YELLOW}Digite o termo para buscar na descrição: ${NC}"
     read -r search_term
     select_shortcut "$search_term"
 }
@@ -237,7 +246,7 @@ main_menu() {
         done < "$SHORTCUTS_FILE"
         
         if [ ${#shortcuts[@]} -gt 0 ]; then
-            echo -e "${CYAN}Atalhos disponíveis:${NC}"
+            echo -e "${CYAN}📋 Atalhos disponíveis:${NC}"
             echo ""
             
             local index=1
@@ -245,24 +254,24 @@ main_menu() {
                 description=$(echo "$item" | cut -d'|' -f1)
                 type=$(echo "$item" | cut -d'|' -f3)
                 if [[ "$type" == "command" ]]; then
-                    echo -e "${YELLOW}$index.${NC} ${GREEN}[CMD]${NC} $description"
+                    echo -e "${YELLOW}$index.${NC} ${GREEN}[⚡ CMD]${NC} $description"
                 else
-                    echo -e "${YELLOW}$index.${NC} ${BLUE}[FILE]${NC} $description"
+                    echo -e "${YELLOW}$index.${NC} ${BLUE}[📁 FILE]${NC} $description"
                 fi
                 ((index++))
             done
             echo ""
         else
-            echo -e "${RED}Nenhum atalho encontrado.${NC}"
+            echo -e "${RED}📭 Nenhum atalho encontrado.${NC}"
             echo ""
         fi
         
-        echo -e "${CYAN}Funções:${NC}"
-        echo -e "${GREEN}a.${NC} Adicionar Atalho"
-        echo -e "${GREEN}r.${NC} Remover Atalho"
-        echo -e "${GREEN}b.${NC} Buscar Atalho"
+        echo -e "${CYAN}🛠️  Funções:${NC}"
+        echo -e "${GREEN}a.${NC} ✨ Adicionar Atalho"
+        echo -e "${GREEN}r.${NC} 🗑️  Remover Atalho"
+        echo -e "${GREEN}b.${NC} 🔍 Buscar Atalho"
         echo ""
-        echo -e "${RED}0. Sair${NC}"
+        echo -e "${RED}0.${NC} 🚪 Sair"
         echo ""
         echo -n "Digite sua escolha: "
         read -r choice
@@ -280,12 +289,14 @@ main_menu() {
             a|A) add_shortcut ;;
             r|R) remove_shortcut ;;
             b|B) search_shortcut ;;
-            0) echo -e "${GREEN}Saindo...${NC}"; exit 0 ;;
-            *) echo -e "${RED}Opção inválida! Tente novamente.${NC}"; sleep 2 ;;
+            0) echo -e "${GREEN}👋 Saindo...${NC}"; exit 0 ;;
+            *) echo -e "${RED}❌ Opção inválida! Tente novamente.${NC}"; sleep 2 ;;
         esac
     done
 }
 
 # Executa o script
+echo -e "${GREEN}🚀 Iniciando Menu de Atalhos...${NC}"
+sleep 1
 main_menu
 
