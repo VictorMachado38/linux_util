@@ -19,77 +19,29 @@ Este projeto nasceu da necessidade de automatizar e simplificar tarefas repetiti
 
 ## 🛠️ Ferramentas Disponíveis
 
-### 1. `shortcut_menu.sh` - Gerenciador de Atalhos Interativo
+### 1. 📋 Shortcut Menu - Gerenciador de Atalhos
 
-O primeiro utilitário do projeto é um **sistema completo de gerenciamento de atalhos** que permite acessar rapidamente arquivos de configuração e documentos importantes.
+**Localização:** `Shortcut Menu/shortcut_menu.sh`
 
-#### ✨ Funcionalidades Principais:
+Sistema completo de gerenciamento de atalhos que permite acessar rapidamente arquivos de configuração e documentos importantes.
 
-- **📋 Menu Interativo Colorido**: Interface amigável com cores para melhor experiência visual
-- **🔍 Busca Inteligente**: Encontre atalhos rapidamente usando termos de busca
-- **➕ Adicionar Atalhos**: Crie novos atalhos para arquivos importantes
-- **🗑️ Remover Atalhos**: Gerencie sua lista removendo atalhos desnecessários
-- **📖 Visualização Múltipla**: Visualize arquivos com `cat`, `vim` ou `nano`
-- **💾 Persistência**: Atalhos são salvos automaticamente em `~/.shortcuts.conf`
+**Principais recursos:**
+- Menu interativo colorido com busca inteligente
+- Adicionar/remover atalhos dinamicamente
+- Visualização múltipla (cat, vim, nano)
+- Persistência automática dos atalhos
 
-#### 🎮 Como Usar:
+### 2. 📝 Diary - Diário Pessoal
 
-```bash
-# Execute o script
-./shortcut_menu.sh
+**Localização:** `Diary/diary.sh`
 
-# Ou torne-o executável primeiro
-chmod +x shortcut_menu.sh
-./shortcut_menu.sh
-```
+Sistema de registro de atividades diárias com atividades predefinidas e registro manual.
 
-#### 📱 Interface do Usuário:
-
-```
-╔═══════════════════════════════════════╗
-║            MENU DE ATALHOS            ║
-╚═══════════════════════════════════════╝
-
-Atalhos disponíveis:
-1. Cloudflared Config
-
-Funções:
-a. Adicionar Atalho
-r. Remover Atalho
-b. Buscar Atalho
-
-0. Sair
-
-Digite sua escolha:
-```
-
-#### 🔧 Ações Disponíveis:
-
-1. **Selecionar Atalho**: Digite o número do atalho desejado
-2. **Adicionar (a)**: Crie um novo atalho com descrição e caminho
-3. **Remover (r)**: Delete atalhos da lista
-4. **Buscar (b)**: Encontre atalhos por termo de busca
-5. **Sair (0)**: Encerre o programa
-
-#### 📁 Formato dos Atalhos:
-
-Os atalhos são armazenados no formato:
-```
-Descrição do Atalho|/caminho/completo/para/arquivo
-```
-
-Exemplo:
-```
-Cloudflared Config|/etc/cloudflared/config.yml
-Docker Compose|/home/user/project/docker-compose.yml
-```
-
-#### 🎨 Recursos Visuais:
-
-- **Cores diferenciadas** para melhor legibilidade
-- **Interface limpa** e organizada
-- **Feedback visual** para todas as ações
-- **Navegação intuitiva** com numeração clara
+**Principais recursos:**
+- Registro de atividades com timestamp automático
+- Lista de atividades predefinidas personalizáveis
+- Visualização de diários por data
+- Interface intuitiva e colorida
 
 ## 🚀 Instalação
 
@@ -101,13 +53,37 @@ cd linux_util
 
 2. **Torne os scripts executáveis**:
 ```bash
-chmod +x shortcut_menu.sh
+chmod +x "Shortcut Menu/shortcut_menu.sh"
+chmod +x "Diary/diary.sh"
 ```
 
-3. **Execute o script**:
+3. **Execute os scripts**:
 ```bash
-./shortcut_menu.sh
+# Menu de atalhos
+./"Shortcut Menu/shortcut_menu.sh"
+
+# Diário pessoal
+./"Diary/diary.sh"
 ```
+
+## 📚 Documentação
+
+Cada ferramenta possui sua própria documentação detalhada:
+
+- 📋 [Shortcut Menu - Guia Completo](Shortcut%20Menu/README.md)
+- 📝 [Diary - Guia Completo](Diary/README.md)
+
+## 🎯 Casos de Uso
+
+### Shortcut Menu
+- Acesso rápido a arquivos de configuração
+- Navegação eficiente em projetos grandes
+- Gerenciamento de documentos importantes
+
+### Diary
+- Tracking de atividades de trabalho
+- Registro de progresso diário
+- Análise de produtividade pessoal
 
 ## 📝 Próximas Ferramentas
 

@@ -297,6 +297,6 @@ main_menu() {
 
 # Executa o script
 echo -e "${GREEN}🚀 Iniciando Menu de Atalhos...${NC}"
-sleep 1
+sleep 0.2
 main_menu
 
